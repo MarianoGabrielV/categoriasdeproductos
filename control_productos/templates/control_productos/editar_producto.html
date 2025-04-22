@@ -1,0 +1,24 @@
+{% extends 'control_productos/base.html' %}
+
+{% block title %}Editar Producto{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Editar producto</h2>
+
+<form method="post" class="border p-4 bg-white shadow-sm rounded">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label text-dark">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="{% url 'inicio' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "control_productos/base.html" %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Iniciar sesión</h2>
+
+<form method="post" class="border p-4 bg-white text-dark rounded shadow-sm">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.username.label_tag }} 
+        {{ form.username }}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+    </div>
+    <button type="submit" class="btn btn-primary">Ingresar</button>
+</form>
+{% endblock %}

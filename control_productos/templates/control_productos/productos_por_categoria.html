@@ -1,0 +1,98 @@
+{% extends 'control_productos/base.html' %}
+
+{% block title %}Productos - {{ categoria.nombre }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Productos en "{{ categoria.nombre }}"</h2>
+
+<a href="{% url 'agregar_producto_categoria' categoria.id %}" class="btn btn-success mb-3">Agregar producto</a>
+<a href="{% url 'inicio' %}" class="btn btn-secondary mb-3">Volver al inicio</a>
+<a href="{% url 'exportar_excel' categoria.id %}?tipo={{ request.GET.tipo }}&stock={{ request.GET.stock }}" class="btn btn-outline-success mb-3">
+    📥 Exportar a Excel
+</a>
+<a href="{% url 'exportar_pdf' categoria.id %}?tipo={{ request.GET.tipo }}&stock={{ request.GET.stock }}" class="btn btn-outline-danger mb-3 ms-2">
+    📄 Exportar a PDF
+</a>
+
+
+
+<p class="text-white">Cantidad de productos: {{ productos|length }}</p>
+<!-- 🔍 Filtros inteligentes -->
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="q" placeholder="Buscar producto..." class="form-control" value="{{ request.GET.q }}">
+    </div>
+    <div class="col-md-2">
+        <select name="tipo" class="form-select">
+            <option value="">Tipo</option>
+            <option value="importado" {% if request.GET.tipo == 'importado' %}selected{% endif %}>Importado</option>
+            <option value="nacional" {% if request.GET.tipo == 'nacional' %}selected{% endif %}>Nacional</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="stock" class="form-select">
+            <option value="">Stock</option>
+            <option value="sin" {% if request.GET.stock == 'sin' %}selected{% endif %}>Sin stock</option>
+            <option value="bajo" {% if request.GET.stock == 'bajo' %}selected{% endif %}>Stock bajo</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'productos_por_categoria' categoria.id %}" class="btn btn-secondary w-100">Limpiar</a>
+    </div>
+</form>
+
+
+{% if productos %}
+    <ul class="list-group">
+        {% for producto in productos %}
+            <li class="list-group-item bg-light text-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}
+
+                        {% if producto.importado %}
+                            <span class="badge bg-info">Importado</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Nacional</span>
+                        {% endif %}
+
+                        {% if producto.stock == 0 %}
+                            <span class="badge bg-dark">Sin stock</span>
+                        {% elif producto.stock <= 5 %}
+                            <span class="badge bg-danger">Stock bajo ({{ producto.stock }})</span>
+                        {% else %}
+                            <span class="badge bg-success">Stock OK ({{ producto.stock }})</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'editar_producto' producto.pk %}" class="btn btn-sm btn-warning me-2">Editar</a>
+                        <a href="{% url 'eliminar_producto' producto.pk %}" class="btn btn-sm btn-danger me-2">Eliminar</a>
+
+                        <!-- Reposición -->
+                        <form method="post" action="{% url 'reponer_stock' producto.id %}" class="d-flex align-items-center me-2">
+                            {% csrf_token %}
+                            <input type="number" name="cantidad" min="1" placeholder="Cantidad"
+                                   class="form-control form-control-sm me-2" style="width: 90px;">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Reponer</button>
+                        </form>
+
+                        <!-- Venta -->
+                        <form method="post" action="{% url 'vender_stock' producto.id %}" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="number" name="cantidad" min="1" placeholder="Cantidad"
+                                   class="form-control form-control-sm me-2" style="width: 90px;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Vender</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="alert alert-warning">No hay productos en esta categoría.</div>
+{% endif %}
+{% endblock %}

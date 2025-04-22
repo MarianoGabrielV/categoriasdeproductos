@@ -1,0 +1,27 @@
+{% extends 'control_productos/base.html' %}
+
+{% block title %}Agregar producto a {{ categoria.nombre }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Agregar producto a "{{ categoria.nombre }}"</h2>
+
+<form method="post" class="border p-4 bg-white shadow-sm rounded">
+    {% csrf_token %}
+    {% for field in form %}
+        {% if field.name != 'categoria' %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label text-dark">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'productos_por_categoria' categoria.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}
