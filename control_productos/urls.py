@@ -13,7 +13,7 @@ urlpatterns = [
     path('vender/<int:producto_id>/', views.vender_stock, name='vender_stock'),
     path('categoria/<int:categoria_id>/exportar-excel/', views.exportar_productos_excel, name='exportar_excel'),
     path('categoria/<int:categoria_id>/exportar-pdf/', views.exportar_productos_pdf, name='exportar_pdf'),
-     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 
 
     
